@@ -47,8 +47,22 @@ public class GobangModel {
     }
 
     /**
-     * 下棋
+     * 是否可以下
      * 
+     * @author gudh
+     * @param type
+     * @param loc
+     * @return
+     */
+    public boolean canPlay(Location loc) {
+        if (BOARD[loc.row][loc.col] != PieceType.EMPTY) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 下棋
      * 
      * @author gudh
      * @param type
@@ -58,7 +72,7 @@ public class GobangModel {
         if (type == PieceType.EMPTY) {
             throw new RuntimeException(loc.toString() + " can't play empty");
         }
-        if (BOARD[loc.row][loc.col] != PieceType.EMPTY) {
+        if (!canPlay(loc)) {
             throw new RuntimeException(loc.toString() + " not empty");
         }
         BOARD[loc.row][loc.col] = type;
@@ -118,12 +132,19 @@ public class GobangModel {
     }
 
     public static enum PieceType {
-        EMPTY, MACHINE, PEOPLE
+        EMPTY, MACHINE, PEOPLE;
+
+        public PieceType next() {
+            if (this == MACHINE) {
+                return PEOPLE;
+            }
+            return MACHINE;
+        }
     }
 
     public static enum PieceState {
         COME5, LIVE4, DOUBLE_DIE4, DIE4_LIVE3, DOUBLE_LIVE3, // 会赢
-        DIE3_LIVE3, DIE4, LIVE3, DIE3, DOUBLE_LIVE2, LIVE2, DIE2 // 待定
+        DIE3_LIVE3, DIE4, LIVE3, DIE3, DOUBLE_LIVE2, LIVE2, DIE2; // 待定
     }
 
     public static class Location {
