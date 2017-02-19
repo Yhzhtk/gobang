@@ -3,10 +3,17 @@ package info.yhzhtk.gobang;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 五子棋领域
+ * 
+ * @author gudh
+ * @create 2017年2月19日
+ */
 public class GobangModel {
 
+    // 棋盘大小
     public final static int BOARD_SIZE = 15;
-
+    // 棋盘情况
     private final PieceType[][] BOARD = new PieceType[BOARD_SIZE][BOARD_SIZE];
 
     public GobangModel() {
@@ -17,6 +24,15 @@ public class GobangModel {
         }
     }
 
+    /**
+     * 获取位置 loc 附近 distance 的所有可下节点
+     * 
+     * 
+     * @author gudh
+     * @param loc
+     * @param distance
+     * @return
+     */
     public List<Location> getNearLocation(Location loc, int distance) {
         if (distance < 1 || distance > BOARD_SIZE) {
             throw new RuntimeException("distance " + distance + " beyond limit");
@@ -30,41 +46,14 @@ public class GobangModel {
         return list;
     }
 
-    private List<Location> getSingleNearLocation(Location loc, int distance) {
-        List<Location> list = new ArrayList<Location>();
-        int start_row = loc.row - distance;
-        int end_row = loc.row + distance;
-        int start_col = loc.col - distance;
-        int end_col = loc.col + distance;
-
-        start_row = start_row < 0 ? 0 : start_row;
-        end_row = end_row >= BOARD_SIZE ? BOARD_SIZE - 1 : end_row;
-        start_col = start_col < 0 ? 0 : start_col;
-        end_col = end_col >= BOARD_SIZE ? BOARD_SIZE - 1 : end_col;
-
-        // 左右两列
-        for (int i = start_row; i <= end_row; i++) {
-            if (BOARD[i][start_col] == PieceType.EMPTY) {
-                list.add(new Location(i, start_col));
-            }
-            if (BOARD[i][end_col] == PieceType.EMPTY) {
-                list.add(new Location(i, end_col));
-            }
-        }
-
-        // 上下两行
-        for (int i = start_col; i <= end_col; i++) {
-            if (BOARD[start_row][i] == PieceType.EMPTY) {
-                list.add(new Location(start_row, i));
-            }
-            if (BOARD[end_row][i] == PieceType.EMPTY) {
-                list.add(new Location(end_row, i));
-            }
-        }
-
-        return list;
-    }
-
+    /**
+     * 下棋
+     * 
+     * 
+     * @author gudh
+     * @param type
+     * @param loc
+     */
     public void play(PieceType type, Location loc) {
         if (type == PieceType.EMPTY) {
             throw new RuntimeException(loc.toString() + " can't play empty");
@@ -75,6 +64,29 @@ public class GobangModel {
         BOARD[loc.row][loc.col] = type;
     }
 
+    /**
+     * 收回下棋
+     * 
+     * 
+     * @author gudh
+     * @param loc
+     */
+    public void replay(Location loc) {
+        if (BOARD[loc.row][loc.col] == PieceType.EMPTY) {
+            throw new RuntimeException("replay " + loc.toString() + " has be empty");
+        }
+        BOARD[loc.row][loc.col] = PieceType.EMPTY;
+    }
+
+    /**
+     * 判断棋谱是否满足某个条件
+     * 
+     * @author gudh
+     * @param type
+     * @param loc
+     * @param state
+     * @return
+     */
     public boolean calculate(PieceType type, Location loc, PieceState state) {
         switch (state) {
         case COME5:
@@ -136,9 +148,69 @@ public class GobangModel {
             return col;
         }
 
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + col;
+            result = prime * result + row;
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            Location other = (Location) obj;
+            if (col != other.col)
+                return false;
+            if (row != other.row)
+                return false;
+            return true;
+        }
+
         public String toString() {
             return row + ":" + col;
         }
+    }
+
+    private List<Location> getSingleNearLocation(Location loc, int distance) {
+        List<Location> list = new ArrayList<Location>();
+        int start_row = loc.row - distance;
+        int end_row = loc.row + distance;
+        int start_col = loc.col - distance;
+        int end_col = loc.col + distance;
+
+        start_row = start_row < 0 ? 0 : start_row;
+        end_row = end_row >= BOARD_SIZE ? BOARD_SIZE - 1 : end_row;
+        start_col = start_col < 0 ? 0 : start_col;
+        end_col = end_col >= BOARD_SIZE ? BOARD_SIZE - 1 : end_col;
+
+        // 左右两列
+        for (int i = start_row; i <= end_row; i++) {
+            if (BOARD[i][start_col] == PieceType.EMPTY) {
+                list.add(new Location(i, start_col));
+            }
+            if (BOARD[i][end_col] == PieceType.EMPTY) {
+                list.add(new Location(i, end_col));
+            }
+        }
+
+        // 上下两行
+        for (int i = start_col; i <= end_col; i++) {
+            if (BOARD[start_row][i] == PieceType.EMPTY) {
+                list.add(new Location(start_row, i));
+            }
+            if (BOARD[end_row][i] == PieceType.EMPTY) {
+                list.add(new Location(end_row, i));
+            }
+        }
+
+        return list;
     }
 
     private boolean toCOME5(PieceType type, Location loc) {
