@@ -57,12 +57,11 @@ public class GobangAI {
             return maxResult;
         }
 
-        StateScore state = StateScore.first;
-
         // 对每一个位置递归，寻找最有解
         for (Location loc : list) {
             CalResult result = null;
-            while (state != null) {
+
+            for(StateScore state : StateScore.values()) {
                 if (!gobang.canPlay(loc)) {
                     continue;
                 }
@@ -70,7 +69,6 @@ public class GobangAI {
                     result = new CalResult(type, loc, state.score);
                     break;
                 }
-                state = state.next();
             }
             if (result == null) {
                 result = new CalResult(type, loc, 0);
