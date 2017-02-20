@@ -93,6 +93,20 @@ public class GobangModel {
     }
 
     /**
+     * 打印棋盘
+     * 
+     * @author gudh
+     */
+    public void print() {
+        for (PieceType[] cols : BOARD) {
+            for (PieceType col : cols) {
+                System.out.print(col.text() + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    /**
      * 判断棋谱是否满足某个条件
      * 
      * @author gudh
@@ -139,6 +153,17 @@ public class GobangModel {
                 return PEOPLE;
             }
             return MACHINE;
+        }
+
+        public String text() {
+            if (this == EMPTY) {
+                return "·";
+            } else if (this == MACHINE) {
+                return "●";
+            } else if (this == PEOPLE) {
+                return "○";
+            }
+            return "";
         }
     }
 
