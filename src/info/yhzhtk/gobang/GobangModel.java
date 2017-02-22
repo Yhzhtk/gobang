@@ -289,6 +289,13 @@ public class GobangModel {
         }
     }
 
+ /**
+  * 
+  * @Description:  TODO(这里用一句话描述这个方法的作用)    
+  * @return:       ConnectSituation    
+  * @author        liushuisheng
+  * @Date          2017年2月20日 下午11:58:59
+  */
     private ConnectSituation getAroundSituation(PieceType type, Location loc, Direction direction, int number) {
         int row = loc.row;
         int col = loc.col;
@@ -408,6 +415,7 @@ public class GobangModel {
         return false;
     }
 
+    
     private boolean toLIVE4(PieceType type, Location loc) {
 
         for (Direction direction : Direction.values()) {
@@ -426,17 +434,40 @@ public class GobangModel {
             case HORIZONTAL:
                 prevLoc.setRow(startLoc.getRow());
                 prevLoc.setCol(startLoc.getCol() - 1);
+                
                 nextLoc.setRow(endLoc.getRow());
                 nextLoc.setCol(endLoc.getCol() + 1);
                 break;
             case VERTICAL:
+                prevLoc.setRow(startLoc.getRow() - 1);
+                prevLoc.setCol(startLoc.getCol());
+                
+                nextLoc.setRow(endLoc.getRow() + 1);
+                nextLoc.setCol(endLoc.getCol());
                 break;
             case LEFT_DIAGONAL:
+                prevLoc.setRow(startLoc.getRow() - 1);
+                prevLoc.setCol(startLoc.getCol() - 1);
+                
+                nextLoc.setRow(endLoc.getRow() + 1);
+                nextLoc.setCol(endLoc.getCol() + 1);
                 break;
             case RIGHT_DIAGONAL:
+                prevLoc.setRow(startLoc.getRow() - 1);
+                prevLoc.setCol(startLoc.getCol() + 1);
+                
+                nextLoc.setRow(endLoc.getRow() + 1);
+                nextLoc.setCol(endLoc.getCol() - 1);
                 break;
             }
-
+            
+            if((prevLoc.getRow() >= 0 && prevLoc.getRow() < BOARD_SIZE && prevLoc.getRow() >= 0 && prevLoc.getCol() < BOARD_SIZE 
+                    && BOARD[prevLoc.getRow()][prevLoc.getCol()] == PieceType.EMPTY)
+                    || (endLoc.getRow() >= 0 && endLoc.getRow() < BOARD_SIZE && endLoc.getCol() >= 0 && endLoc.getCol() < BOARD_SIZE
+                    && BOARD[endLoc.getRow()][endLoc.getCol()] == PieceType.EMPTY)) {
+                return true;
+            }
+                
         }
 
         return false;
