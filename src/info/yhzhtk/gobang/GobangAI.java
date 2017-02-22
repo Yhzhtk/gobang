@@ -4,7 +4,7 @@ import info.yhzhtk.gobang.GobangModel.Location;
 import info.yhzhtk.gobang.GobangModel.PieceState;
 import info.yhzhtk.gobang.GobangModel.PieceType;
 
-import java.util.List;
+import java.util.LinkedHashSet;
 
 /**
  * 五指棋AI程序
@@ -14,10 +14,14 @@ import java.util.List;
  */
 public class GobangAI {
 
-    public final static int SCAN_DISTANCE = 4;
-    public final static int SCAN_DEPTH = 5;
+    public final static int SCAN_DISTANCE = 2;
+    public final static int SCAN_DEPTH = 4;
 
-    private GobangModel gobang = new GobangModel();
+    private GobangModel gobang;
+
+    public GobangAI(GobangModel gobang) {
+        this.gobang = gobang;
+    }
 
     /**
      * 计算最优的下一步
@@ -33,7 +37,7 @@ public class GobangAI {
         }
 
         // 可以下的范围
-        List<Location> list = gobang.getNearLocation(lastPeopleLoc, SCAN_DISTANCE);
+        LinkedHashSet<Location> list = gobang.getNearLocation(lastPeopleLoc, SCAN_DISTANCE);
         list.addAll(gobang.getNearLocation(lastMathineLoc, SCAN_DISTANCE));
 
         CalResult result = calLocationScore(list, PieceType.MACHINE, 0);
@@ -50,7 +54,7 @@ public class GobangAI {
      * @param level
      * @return
      */
-    private CalResult calLocationScore(List<Location> list, PieceType type, int level) {
+    private CalResult calLocationScore(LinkedHashSet<Location> list, PieceType type, int level) {
         CalResult maxResult = null;
         // 递归6层
         if (level > SCAN_DEPTH) {
@@ -59,12 +63,13 @@ public class GobangAI {
 
         // 对每一个位置递归，寻找最有解
         for (Location loc : list) {
-            CalResult result = null;
+            if (!gobang.canPlay(loc)) {
+                continue;
+            }
 
-            for(StateScore state : StateScore.values()) {
-                if (!gobang.canPlay(loc)) {
-                    continue;
-                }
+            CalResult result = null;
+            for (StateScore state : StateScore.values()) {
+                
                 if (gobang.calculate(type, loc, state.state)) {
                     result = new CalResult(type, loc, state.score);
                     break;
@@ -120,18 +125,7 @@ public class GobangAI {
             this.score = score;
         }
 
-        static StateScore first = StateScore.COME5;
-
         PieceState state;
         int score;
-
-        public StateScore next() {
-            for (int i = 0; i < StateScore.values().length - 1; i++) {
-                if (StateScore.values()[i] == this) {
-                    return StateScore.values()[i + 1];
-                }
-            }
-            return null;
-        }
     }
 }

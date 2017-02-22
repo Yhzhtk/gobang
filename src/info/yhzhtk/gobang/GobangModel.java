@@ -1,6 +1,7 @@
 package info.yhzhtk.gobang;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -33,14 +34,14 @@ public class GobangModel {
      * @param distance
      * @return
      */
-    public List<Location> getNearLocation(Location loc, int distance) {
+    public LinkedHashSet<Location> getNearLocation(Location loc, int distance) {
         if (distance < 1 || distance > BOARD_SIZE) {
             throw new RuntimeException("distance " + distance + " beyond limit");
         }
-        List<Location> list = new ArrayList<Location>();
+        LinkedHashSet<Location> list = new LinkedHashSet<Location>();
 
         for (int i = 1; i <= distance; i++) {
-            list.addAll(getSingleNearLocation(loc, distance));
+            list.addAll(getSingleNearLocation(loc, i));
         }
 
         return list;
@@ -92,18 +93,30 @@ public class GobangModel {
         BOARD[loc.row][loc.col] = PieceType.EMPTY;
     }
 
+    static int i = 0;
+
     /**
      * 打印棋盘
      * 
      * @author gudh
      */
     public void print() {
-        for (PieceType[] cols : BOARD) {
+        System.out.print("  ");
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            String s = i < 10 ? i + " " : (char) (i - 10 + (int) 'a') + " ";
+            System.out.print(s);
+        }
+        System.out.println();
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            PieceType[] cols = BOARD[i];
+            String s = i < 10 ? i + " " : (char) (i - 10 + (int) 'a') + " ";
+            System.out.print(s);
             for (PieceType col : cols) {
                 System.out.print(col.text() + " ");
             }
             System.out.println();
         }
+        System.out.println(i++ + " -------------------------");
     }
 
     /**
@@ -392,7 +405,7 @@ public class GobangModel {
         }
 
         // 上下两行
-        for (int i = start_col; i <= end_col; i++) {
+        for (int i = start_col + 1; i < end_col; i++) {
             if (BOARD[start_row][i] == PieceType.EMPTY) {
                 list.add(new Location(start_row, i));
             }
